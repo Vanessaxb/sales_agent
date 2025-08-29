@@ -37,7 +37,7 @@ import os
 #print(f"fpdf2 version: {fpdf.__version__}")
 
 # Check DejaVu font path
-font_path = os.path.join(os.path.dirname(__file__), "fonts", "DejaVuSans.ttf")
+font_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
 
 if os.path.exists(font_path):
     print(f"DejaVuSans.ttf found at: {font_path}")
