@@ -301,7 +301,7 @@ pdf = FPDF()
 pdf.add_page()
 
 # Add a Unicode font (DejaVu is common)
-pdf.add_font('DejaVu', '', '/path/to/DejaVuSans.ttf', uni=True)
+pdf.add_font('DejaVu', '', '/DejaVuSans.ttf', uni=True)
 pdf.set_font('DejaVu', '', 12)
 
 pdf.cell(0, 10, "Company: " + lc_doc.metadata['company'], ln=True)
