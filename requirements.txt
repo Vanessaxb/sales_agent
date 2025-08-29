@@ -7,4 +7,5 @@ python-dotenv
 langchain-tavily
 PyPDF2
 fpdf
+python-docx
 #langchain-graph
