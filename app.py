@@ -297,6 +297,15 @@ def export_docx(lc_doc):
 
 
 # ====== PDF Export Function ==============================
+pdf = FPDF()
+pdf.add_page()
+
+# Add a Unicode font (DejaVu is common)
+pdf.add_font('DejaVu', '', '/path/to/DejaVuSans.ttf', uni=True)
+pdf.set_font('DejaVu', '', 12)
+
+pdf.cell(0, 10, "Company: " + lc_doc.metadata['company'], ln=True)
+
 class PDF(FPDF):
     def header(self):
         self.set_font("DejaVu", 'B', 16)
@@ -312,7 +321,7 @@ def export_pdf(report_content, company_name: str):
     pdf.add_page()
 
      # ----- Load monospace font here -----
-    monospace_font_path = os.path.join(os.path.dirname(__file__), "fonts", "DejaVuSansMono.ttf")
+    monospace_font_path = os.path.join(os.path.dirname(__file__), "DejaVuSansMono.ttf")
     if os.path.exists(monospace_font_path):
         pdf.add_font('DejaVuMono', '', monospace_font_path, uni=True)
         pdf.add_font('DejaVuMono', 'B', monospace_font_path, uni=True)
@@ -398,8 +407,8 @@ def export_pdf(report_content, company_name: str):
 
     # Output PDF to BytesIO
     pdf_output = io.BytesIO()
-    #pdf_output.write(pdf.output(dest='S').encode('latin1'))  # or 'utf-8' if using unicode fonts
-    pdf_output.write(pdf.output(dest='S'))  # works if output is already bytes
+    pdf_output.write(pdf.output(dest='S').encode('latin1'))  # or 'utf-8' if using unicode fonts
+    #pdf_output.write(pdf.output(dest='S'))  # works if output is already bytes
 
     #pdf_output.write(pdf.output(dest='S'))  # write bytearray directly
     pdf_output.seek(0)
