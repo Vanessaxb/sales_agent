@@ -301,8 +301,10 @@ pdf = FPDF()
 pdf.add_page()
 
 # Add a Unicode font (DejaVu is common)
-pdf.add_font('DejaVu', '', '/DejaVuSans.ttf', uni=True)
-pdf.set_font('DejaVu', '', 12)
+#pdf.add_font('DejaVu', '', '/DejaVuSans.ttf', uni=True)
+#pdf.set_font('DejaVu', '', 12)
+pdf.set_font("Helvetica", size=12)
+
 
 pdf.cell(0, 10, "Company: " + lc_doc.metadata['company'], ln=True)
 
@@ -313,29 +315,15 @@ class PDF(FPDF):
         self.ln(5)  # Line break
 
 ########def export_pdf(report_content: dict, company_name: str):
-def export_pdf(report_content, company_name: str):
-    pdf = FPDF('P','mm','letter')
-    pdf.set_auto_page_break(auto=True, margin=10)  # bottom margin
-    pdf.set_left_margin(10)   # left margin
-    pdf.set_right_margin(10)  # right margin
-    pdf.add_page()
-
-     # ----- Load monospace font here -----
-    monospace_font_path = os.path.join(os.path.dirname(__file__), "DejaVuSansMono.ttf")
-    if os.path.exists(monospace_font_path):
-        pdf.add_font('DejaVuMono', '', monospace_font_path, uni=True)
-        pdf.add_font('DejaVuMono', 'B', monospace_font_path, uni=True)
+ont_path = os.path.join(os.path.dirname(__file__), "DejaVuSans.ttf")
+    if os.path.exists(font_path):
+        pdf.add_font('DejaVu', '', font_path, uni=True)
+        pdf.add_font('DejaVu', 'B', font_path, uni=True)
+        pdf.set_font('DejaVu', 'B', 18)
     else:
-        #print("WARNING: DejaVuSansMono.ttf not found. Falling back to Courier.")
-        pdf.set_font('Courier', '', 12)
+        pdf.set_font('Helvetica', 'B', 18)
 
     # Title
-    if os.path.exists(monospace_font_path):
-        #pdf.add_font('DejaVuMono', 'B', monospace_font_path, uni=True)
-        pdf.set_font('DejaVuMono', 'B', 18)
-    else:
-        pdf.set_font('Courier', 'B', 18)
-
     pdf.cell(0, 10, f'Sales Insights Report - {company_name}', 0, 1, 'C')
     pdf.ln(10)
 
@@ -345,43 +333,21 @@ def export_pdf(report_content, company_name: str):
     else:
         content_text = str(report_content)
 
-    
-    
-    # Calculate page width (respect margins)
     page_width = pdf.w - pdf.l_margin - pdf.r_margin
-    import re
-
-   # Convert dict to string if needed
-    if isinstance(report_content, dict):
-        content_text = "\n".join(f"{k}: {v}" for k, v in report_content.items())
-    else:
-        content_text = str(report_content)
 
     for line in content_text.split('\n'):
-        # Remove all leading whitespace
-        line = re.sub(r'^[\s\u00A0\t]+', '', line)
-
+        line = line.strip()
         if not line:
             pdf.ln(3)
             continue
 
-        # Detect headings: lines ending with ":" or starting with numbers
         is_heading = line.endswith(":") or re.match(r'^\d+[\.\)]', line)
-
         if is_heading:
-            # Bold and bigger font for heading
-            if os.path.exists(monospace_font_path):
-                pdf.set_font('DejaVuMono', 'B', 16)
-            else:
-                pdf.set_font('Courier', 'B', 16)
+            pdf.set_font('DejaVu' if os.path.exists(font_path) else 'Helvetica', 'B', 16)
         else:
-            # Normal font for content
-            if os.path.exists(monospace_font_path):
-                pdf.set_font('DejaVuMono', '', 12)
-            else:
-                pdf.set_font('Courier', '', 12)
+            pdf.set_font('DejaVu' if os.path.exists(font_path) else 'Helvetica', '', 12)
 
-         # Detect URLs
+        # URLs
         urls = re.findall(r'(https?://\S+)', line)
         if urls:
             parts = re.split(r'(https?://\S+)', line)
@@ -395,22 +361,14 @@ def export_pdf(report_content, company_name: str):
                 else:
                     pdf.write(6, part)
             pdf.ln(6)
-        else:     
-        # Normalize bullets/dashes
+        else:
             if line.startswith("-"):
                 line = "• " + line[1:].lstrip()
-
-            # Reset x-position for each line
             pdf.set_x(pdf.l_margin)
             pdf.multi_cell(page_width, 6, line)
 
-
-    # Output PDF to BytesIO
     pdf_output = io.BytesIO()
-    pdf_output.write(pdf.output(dest='S').encode('latin1'))  # or 'utf-8' if using unicode fonts
-    #pdf_output.write(pdf.output(dest='S'))  # works if output is already bytes
-
-    #pdf_output.write(pdf.output(dest='S'))  # write bytearray directly
+    pdf_output.write(pdf.output(dest='S').encode('latin1'))
     pdf_output.seek(0)
     return pdf_output
 
