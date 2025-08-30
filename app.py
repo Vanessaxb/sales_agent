@@ -297,16 +297,6 @@ def export_docx(lc_doc):
 
 
 # ====== PDF Export Function ==============================
-pdf = FPDF()
-pdf.add_page()
-
-# Add a Unicode font (DejaVu is common)
-#pdf.add_font('DejaVu', '', '/DejaVuSans.ttf', uni=True)
-#pdf.set_font('DejaVu', '', 12)
-pdf.set_font("Helvetica", size=12)
-
-
-pdf.cell(0, 10, "Company: " + lc_doc.metadata['company'], ln=True)
 
 class PDF(FPDF):
     def header(self):
@@ -409,8 +399,8 @@ def export_pdf(report_content, company_name: str):
 
     # Output PDF to BytesIO
     pdf_output = io.BytesIO()
-    pdf_output.write(pdf.output(dest='S').encode('latin1'))  # or 'utf-8' if using unicode fonts
-    #pdf_output.write(pdf.output(dest='S'))  # works if output is already bytes
+    #pdf_output.write(pdf.output(dest='S').encode('latin1'))  # or 'utf-8' if using unicode fonts
+    pdf_output.write(pdf.output(dest='S'))  # works if output is already bytes
 
     #pdf_output.write(pdf.output(dest='S'))  # write bytearray directly
     pdf_output.seek(0)
