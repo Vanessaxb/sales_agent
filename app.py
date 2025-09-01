@@ -399,14 +399,22 @@ def export_pdf(report_content, company_name: str):
 
     # Output PDF to BytesIO
     pdf_output = io.BytesIO()
-    pdf_output.write(pdf.output(dest='S').encode('latin1'))  # or 'utf-8' if using unicode fonts
-    #pdf_output.write(pdf.output(dest='S'))  # works if output is already bytes
+    result = pdf.output(dest='S')
+    pdf_output.write(pdf.output())
 
+    #pdf_output.write(pdf.output(dest='S').encode('latin1'))  # or 'utf-8' if using unicode fonts
+    #pdf_output.write(pdf.output(dest='S'))  # works if output is already bytes
     #pdf_output.write(pdf.output(dest='S'))  # write bytearray directly
+
+
     pdf_output.seek(0)
     return pdf_output
 
-
+     # Handle fpdf vs fpdf2
+    if isinstance(result, str):
+        pdf_output.write(result.encode("latin1"))  # fpdf 1.x
+    else:
+        pdf_output.write(result)  # fpdf2 (already bytes)
 
 
 # ============= Streamlit UI ==============
