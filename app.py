@@ -399,8 +399,10 @@ def export_pdf(report_content, company_name: str):
 
     # Output PDF to BytesIO
     pdf_output = io.BytesIO()
-    result = pdf.output(dest='S')
-    pdf_output.write(pdf.output())
+    pdf_bytes = pdf.output(dest='S')  # ensures bytes
+    pdf_output.write(pdf_bytes)
+    #result = pdf.output(dest='S')
+    #pdf_output.write(pdf.output())
 
     #pdf_output.write(pdf.output(dest='S').encode('latin1'))  # or 'utf-8' if using unicode fonts
     #pdf_output.write(pdf.output(dest='S'))  # works if output is already bytes
