@@ -305,7 +305,7 @@ class PDF(FPDF):
         self.ln(5)  # Line break
 
 ########def export_pdf(report_content: dict, company_name: str):
-def export_pdf(report_content, company_name: str):
+def export_pdf(report_content, company_name: str) -> io.BytesIO:
     pdf = FPDF('P','mm','letter')
     pdf.set_auto_page_break(auto=True, margin=10)  # bottom margin
     pdf.set_left_margin(10)   # left margin
@@ -315,10 +315,10 @@ def export_pdf(report_content, company_name: str):
      # ----- Load monospace font here -----
     monospace_font_path = os.path.join(os.path.dirname(__file__), "DejaVuSansMono.ttf")
     if os.path.exists(monospace_font_path):
-        pdf.add_font('DejaVuMono', '', monospace_font_path, uni=True)
-        pdf.add_font('DejaVuMono', 'B', monospace_font_path, uni=True)
+       pdf.add_font('DejaVuMono', '', monospace_font_path)
+       pdf.add_font('DejaVuMono', 'B', monospace_font_path)
     else:
-        #print("WARNING: DejaVuSansMono.ttf not found. Falling back to Courier.")
+        print("WARNING: DejaVuSansMono.ttf not found. Falling back to Courier.")
         pdf.set_font('Courier', '', 12)
 
     # Title
@@ -398,9 +398,9 @@ def export_pdf(report_content, company_name: str):
 
 
     # Output PDF to BytesIO
-    pdf_output = io.BytesIO()
-    pdf_bytes = pdf.output(dest='S')  # ensures bytes
-    pdf_output.write(pdf_bytes)
+    #pdf_output = io.BytesIO()
+    #pdf_bytes = pdf.output(dest='S')  # ensures bytes
+    #pdf_output.write(pdf_bytes)
     #result = pdf.output(dest='S')
     #pdf_output.write(pdf.output())
 
@@ -408,9 +408,10 @@ def export_pdf(report_content, company_name: str):
     #pdf_output.write(pdf.output(dest='S'))  # works if output is already bytes
     #pdf_output.write(pdf.output(dest='S'))  # write bytearray directly
 
-
-    pdf_output.seek(0)
-    return pdf_output
+    pdf_buffer = io.BytesIO()
+    pdf.output(pdf_buffer)
+    pdf_buffer.seek(0)
+    return pdf_buffer
 
      # Handle fpdf vs fpdf2
     if isinstance(result, str):
